@@ -20,9 +20,10 @@ namespace ProgrammersBlog.Shared.Data.Concrete.EntityFramework
             _context = context;
         }
 
-        public async Task AddAsync(Tentity entity)
+        public async Task<Tentity> AddAsync(Tentity entity)
         {
             await _context.Set<Tentity>().AddAsync(entity);
+            return entity;
         }
 
         public async Task<bool> AnyAsync(Expression<Func<Tentity, bool>> predicate)
@@ -74,9 +75,10 @@ namespace ProgrammersBlog.Shared.Data.Concrete.EntityFramework
             return await query.SingleOrDefaultAsync();
         }
 
-        public async Task UpdateAsync(Tentity entity)
+        public async Task<Tentity> UpdateAsync(Tentity entity)
         {
             await Task.Run(() => { _context.Set<Tentity>().Update(entity); });
+            return entity;
         }
     }
 }
