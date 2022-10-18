@@ -1,3 +1,4 @@
+using ProgrammersBlog.Mvc.AutoMapper.Profiles;
 using ProgrammersBlog.Services.AutoMapper.Profiles;
 using ProgrammersBlog.Services.Extensions;
 using System.Reflection;
@@ -13,8 +14,24 @@ builder.Services.AddControllersWithViews().AddRazorRuntimeCompilation().AddJsonO
     opt.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter());
     opt.JsonSerializerOptions.ReferenceHandler = ReferenceHandler.Preserve;
 });
-builder.Services.AddAutoMapper(typeof(CategoryProfile), typeof(ArticleProfile));
+builder.Services.AddSession();
+builder.Services.AddAutoMapper(typeof(CategoryProfile), typeof(ArticleProfile),typeof(UserProfile));
 builder.Services.LoadMyServices();
+builder.Services.ConfigureApplicationCookie(opt =>
+{
+    opt.LoginPath = new PathString("/Admin/User/Login");
+    opt.LogoutPath = new PathString("/Admin/User/Logout");
+    opt.Cookie = new CookieBuilder
+    {
+        Name = "ProgrammersBlog",
+        HttpOnly = true,
+        SameSite = SameSiteMode.Strict,
+        SecurePolicy = CookieSecurePolicy.SameAsRequest
+    };
+    opt.SlidingExpiration = true;
+    opt.ExpireTimeSpan = System.TimeSpan.FromDays(7);
+    opt.AccessDeniedPath = new PathString("/Admin/User/AccessDenied");
+});
 
 var app = builder.Build();
 
@@ -28,11 +45,15 @@ if (!app.Environment.IsDevelopment())
     app.UseHsts();
 }
 
+app.UseSession();
+
 app.UseHttpsRedirection();
 
 app.UseStaticFiles();
 
 app.UseRouting();
+
+app.UseAuthentication();
 
 app.UseAuthorization();
 

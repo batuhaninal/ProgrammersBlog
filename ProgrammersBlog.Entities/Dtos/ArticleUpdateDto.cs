@@ -12,7 +12,7 @@ namespace ProgrammersBlog.Entities.Dtos
     public class ArticleUpdateDto
     {
         [Required]
-        public int ArticleId { get; set; }
+        public int Id { get; set; }
 
         [DisplayName("Baslik")]
         [Required(ErrorMessage = "{0} alani bos gecilmemelidir.")]

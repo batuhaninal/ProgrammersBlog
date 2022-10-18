@@ -11,7 +11,7 @@ namespace ProgrammersBlog.Entities.Dtos
     public class CategoryUpdateDto
     {
         [Required]
-        public int CategoryId { get; set; }
+        public int Id { get; set; }
 
         [DisplayName("Kategori Adı")]
         [Required(ErrorMessage = "{0} boş gecilmemelidir.")]

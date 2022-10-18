@@ -1,8 +1,8 @@
 ﻿@using ProgrammersBlog.Shared.Utilities.Results.ComplexTypes
-@model ProgrammersBlog.Entities.Dtos.CategoryListDto
+@model ProgrammersBlog.Entities.Dtos.UserListDto
 @{
     Layout = "_Layout";
-    ViewBag.Title = "Kategoriler Index";
+    ViewBag.Title = "Kullanicilar Index";
 }
 @if (Model.ResultStatus == ResultStatus.Success)
 {
@@ -11,58 +11,43 @@
     <div class="card mb-4 mt-2">
         <div class="card-header">
             <i class="fas fa-table mr-1"></i>
-            Kategoriler
+            Kullanicilar
         </div>
         <div class="card-body">
             <div class="spinner-border" role="status" style="display: none;">
                 <span class="sr-only">Yukleniyor...</span>
             </div>
             <div class="table-responsive">
-                <table class="table table-bordered" id="categoriesTable" width="100%" cellspacing="0">
+                <table class="table table-bordered" id="usersTable" width="100%" cellspacing="0">
                     <thead>
                         <tr>
                             <th>Id</th>
-                            <th>Adi</th>
-                            <th>Aciklamasi</th>
-                            <th>Aktif mi?</th>
-                            <th>Silinmis mi?</th>
-                            <th>Not</th>
-                            <th>Olusturulma Tarihi</th>
-                            <th>Olusturan Kullanici Adi</th>
-                            <th>Son Duzenlenme Tarihi</th>
-                            <th>Son Duzenleyen Kullanici Adi</th>
+                            <th>Kullanici Adi</th>
+                            <th>E-Posta Adresi</th>
+                            <th>Telefon Numarasi</th>
+                            <th>Resim</th>
                             <th>Islemler</th>
                         </tr>
                     </thead>
                     <tfoot>
                         <tr>
                             <th>Id</th>
-                            <th>Adi</th>
-                            <th>Aciklamasi</th>
-                            <th>Aktif mi?</th>
-                            <th>Silinmis mi?</th>
-                            <th>Not</th>
-                            <th>Olusturulma Tarihi</th>
-                            <th>Olusturan Kullanici Adi</th>
-                            <th>Son Duzenlenme Tarihi</th>
-                            <th>Son Duzenleyen Kullanici Adi</th>
+                            <th>Kullanici Adi</th>
+                            <th>E-Posta Adresi</th>
+                            <th>Telefon Numarasi</th>
+                            <th>Resim</th>
                             <th>Islemler</th>
                         </tr>
                     </tfoot>
                     <tbody>
-                        @foreach (var item in Model.Categories)
+                        @foreach (var item in Model.Users)
                         {
                             <tr name="@item.Id">
                                 <td>@item.Id</td>
-                                <td>@item.Name</td>
-                                <td>@item.Description</td>
-                                <td>@item.IsActive</td>
-                                <td>@item.IsDeleted</td>
-                                <td>@item.Note</td>
-                                <td>@item.CreatedDate.ToShortDateString()</td>
-                                <td>@item.CreatedByName</td>
-                                <td>@item.ModifiedDate.ToShortDateString()</td>
-                                <td>@item.ModifiedByName</td>
+                                <td>@item.UserName</td>
+                                <td>@item.Email</td>
+                                <td>@item.PhoneNumber</td>
+                                <td><img src="~/img/@item.Picture" alt="@item.UserName" style="max-height:50px; max-width: 50px;" /></td>
                                 <td>
                                     <button class="btn btn-primary btn-sm btn-block btn-update" data-id="@item.Id"><span class="fas fa-edit"></span> Duzenle</button>
                                     <button class="btn btn-danger btn-sm btn-block btn-delete" data-id="@item.Id"><span class="fas fa-minus-circle"></span> Sil</button>
@@ -83,5 +68,5 @@
     </div>
 }
 @section Scripts{
-    <script src="~/js/categoryIndex.js" type="application/ecmascript"></script>
+    <script src="~/js/userIndex.js" type="application/ecmascript"></script>
 }
