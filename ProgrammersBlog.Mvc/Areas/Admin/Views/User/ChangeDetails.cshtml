@@ -1,19 +1,19 @@
 ﻿@model ProgrammersBlog.Entities.Dtos.UserUpdateDto
+@{
+    Layout = "_Layout";
+    ViewBag.Title = "Profili Duzenle";
+}
 
-<div class="modal fade" tabindex="-1" role="dialog" role="dialog" aria-hidden="true">
-    <div class="modal-dialog" role="document">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title"><span class="fas fa-edit"></span> Kullanici Duzenle</h5>
-                <button type="button" class="close" data-dismiss="modal" aria-label="Iptal">
-                    <span aria-hidden="true">&times;</span>
-                </button>
+<div class="row">
+    <div class="col-lg-6 offset-lg-3">
+        <div class="card mt-3">
+            <div class="card-header">
+                <h4 class="text-center"><span class="fas fa-edit"></span> Profil Duzenle</h4>
             </div>
-            <div class="modal-body">
-                <form asp-controller="User" asp-action="Update" method="post" id="form-user-update">
-                    <input name="IsValid" type="hidden" value="@ViewData.ModelState.IsValid.ToString()" />
+            <div class="card-body">
+                <form asp-controller="User" asp-action="ChangeDetails" enctype="multipart/form-data" method="post" id="form-user-update">
                     <input type="hidden" asp-for="Id" />
-                    <div asp-validation-summary="All" class="text-danger" id="validation-summary" aria-hidden="true" style="display:none;"></div>
+                    <div asp-validation-summary="All" class="text-danger" id="validation-summary"></div>
                     <div class="form-group">
                         <label asp-for="UserName"></label>
                         <input class="form-control" asp-for="UserName" placeholder="Lutfen kullanici adi giriniz..." />
@@ -39,11 +39,11 @@
                         <input type="file" accept="image/*" class="form-control-file" asp-for="PictureFile" placeholder="Lutfen sifre giriniz..." />
                         <span class="text-danger" asp-validation-for="PictureFile"></span>
                     </div>
+                    <div class="form-group">
+                        <button type="submit" class="btn btn-primary btn-block"><span class="fas fa-save"></span> Kaydet</button>
+                        <a asp-area="Admin" asp-controller="Home" asp-action="Index" class="btn btn-danger btn-block"><span class="fas fa-times"></span> Iptal</a>
+                    </div>
                 </form>
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-primary btn-block" id="btnUpdate"><span class="fas fa-save"></span> Kaydet</button>
-                <button type="button" class="btn btn-danger btn-block" data-dismiss="modal"><span class="fas fa-times"></span> Iptal</button>
             </div>
         </div>
     </div>
