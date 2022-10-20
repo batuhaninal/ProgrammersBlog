@@ -18,7 +18,7 @@ namespace ProgrammersBlog.Shared.Utilities.Results.Concrete
 
         public DataResult(ResultStatus resultStatus, string message, T data)
         {
-            this.ResultStatus = ResultStatus;
+            this.ResultStatus = resultStatus;
             this.Message = message;
             this.Data = data;
         }

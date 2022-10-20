@@ -1,4 +1,6 @@
 using ProgrammersBlog.Mvc.AutoMapper.Profiles;
+using ProgrammersBlog.Mvc.Helpers.Abstract;
+using ProgrammersBlog.Mvc.Helpers.Concrete;
 using ProgrammersBlog.Services.AutoMapper.Profiles;
 using ProgrammersBlog.Services.Extensions;
 using System.Reflection;
@@ -17,6 +19,7 @@ builder.Services.AddControllersWithViews().AddRazorRuntimeCompilation().AddJsonO
 builder.Services.AddSession();
 builder.Services.AddAutoMapper(typeof(CategoryProfile), typeof(ArticleProfile),typeof(UserProfile));
 builder.Services.LoadMyServices();
+builder.Services.AddScoped<IImageHelper, ImageHelper>();
 builder.Services.ConfigureApplicationCookie(opt =>
 {
     opt.LoginPath = new PathString("/Admin/User/Login");
