@@ -13,7 +13,7 @@ namespace ProgrammersBlog.Shared.Data.Concrete.EntityFramework
     public class EfEntityRepositoryBase<Tentity> : IEntityRepository<Tentity>
         where Tentity : class, IEntity, new()
     {
-        private readonly DbContext _context;
+        protected readonly DbContext _context;
 
         public EfEntityRepositoryBase(DbContext context)
         {
@@ -31,9 +31,10 @@ namespace ProgrammersBlog.Shared.Data.Concrete.EntityFramework
             return await _context.Set<Tentity>().AnyAsync(predicate);
         }
 
-        public async Task<int> CountAsync(Expression<Func<Tentity, bool>> predicate)
+        public async Task<int> CountAsync(Expression<Func<Tentity, bool>> predicate = null)
         {
-            return await _context.Set<Tentity>().CountAsync(predicate);
+
+            return await (predicate == null ? _context.Set<Tentity>().CountAsync() : _context.Set<Tentity>().CountAsync(predicate));
         }
 
         public async Task DeleteAsync(Tentity entity)
@@ -61,10 +62,7 @@ namespace ProgrammersBlog.Shared.Data.Concrete.EntityFramework
         public async Task<Tentity> GetAsync(Expression<Func<Tentity, bool>> predicate, params Expression<Func<Tentity, object>>[] includeProperties)
         {
             IQueryable<Tentity> query = _context.Set<Tentity>();
-            if (predicate != null)
-            {
-                query = query.Where(predicate);
-            }
+            query = query.Where(predicate);
             if (includeProperties.Any())
             {
                 foreach (var item in includeProperties)

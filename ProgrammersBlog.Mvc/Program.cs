@@ -3,7 +3,6 @@ using ProgrammersBlog.Mvc.Helpers.Abstract;
 using ProgrammersBlog.Mvc.Helpers.Concrete;
 using ProgrammersBlog.Services.AutoMapper.Profiles;
 using ProgrammersBlog.Services.Extensions;
-using System.Reflection;
 using System.Text.Json.Serialization;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -16,9 +15,10 @@ builder.Services.AddControllersWithViews().AddRazorRuntimeCompilation().AddJsonO
     opt.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter());
     opt.JsonSerializerOptions.ReferenceHandler = ReferenceHandler.Preserve;
 });
+
 builder.Services.AddSession();
 builder.Services.AddAutoMapper(typeof(CategoryProfile), typeof(ArticleProfile),typeof(UserProfile));
-builder.Services.LoadMyServices();
+builder.Services.LoadMyServices(connectionString: builder.Configuration.GetConnectionString("LocalDB"));
 builder.Services.AddScoped<IImageHelper, ImageHelper>();
 builder.Services.ConfigureApplicationCookie(opt =>
 {
