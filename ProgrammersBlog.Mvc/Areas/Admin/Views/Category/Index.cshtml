@@ -4,6 +4,11 @@
     Layout = "_Layout";
     ViewBag.Title = "Kategoriler Index";
 }
+<ol class="breadcrumb mb-3 mt-2">
+    <li class="breadcrumb-item"><a asp-area="Admin" asp-controller="Home" asp-action="Index">Admin</a></li>
+    <li class="breadcrumb-item active"><a asp-area="Admin" asp-controller="Category" asp-action="Index">Kategoriler</a></li>
+</ol>
+
 @if (Model.ResultStatus == ResultStatus.Success)
 {
     <div id="modalPlaceHolder" aria-hidden="true"></div>
@@ -56,8 +61,8 @@
                                 <td>@item.Id</td>
                                 <td>@item.Name</td>
                                 <td>@item.Description</td>
-                                <td>@item.IsActive</td>
-                                <td>@item.IsDeleted</td>
+                                <td>@(item.IsActive ? "Evet" : "Hayir")</td>
+                                <td>@(item.IsDeleted ? "Evet" : "Hayir")</td>
                                 <td>@item.Note</td>
                                 <td>@item.CreatedDate.ToShortDateString()</td>
                                 <td>@item.CreatedByName</td>
@@ -83,5 +88,5 @@
     </div>
 }
 @section Scripts{
-    <script src="~/js/categoryIndex.js" type="application/ecmascript"></script>
+    <script src="~/AdminLTE/js/categoryIndex.js" type="application/ecmascript"></script>
 }
