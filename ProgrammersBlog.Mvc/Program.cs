@@ -14,10 +14,10 @@ builder.Services.AddControllersWithViews().AddRazorRuntimeCompilation().AddJsonO
 {
     opt.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter());
     opt.JsonSerializerOptions.ReferenceHandler = ReferenceHandler.Preserve;
-});
+}).AddNToastNotifyToastr();
 
 builder.Services.AddSession();
-builder.Services.AddAutoMapper(typeof(CategoryProfile), typeof(ArticleProfile),typeof(UserProfile));
+builder.Services.AddAutoMapper(typeof(CategoryProfile), typeof(ArticleProfile),typeof(UserProfile),typeof(ViewModelsProfile), typeof(CommentProfile));
 builder.Services.LoadMyServices(connectionString: builder.Configuration.GetConnectionString("LocalDB"));
 builder.Services.AddScoped<IImageHelper, ImageHelper>();
 builder.Services.ConfigureApplicationCookie(opt =>
@@ -59,6 +59,8 @@ app.UseRouting();
 app.UseAuthentication();
 
 app.UseAuthorization();
+
+app.UseNToastNotify();
 
 app.UseEndpoints(endpoints => 
 {

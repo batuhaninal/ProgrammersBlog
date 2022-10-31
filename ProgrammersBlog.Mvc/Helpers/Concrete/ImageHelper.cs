@@ -1,4 +1,5 @@
-﻿using ProgrammersBlog.Entities.Dtos;
+﻿using ProgrammersBlog.Entities.ComplexTypes;
+using ProgrammersBlog.Entities.Dtos;
 using ProgrammersBlog.Mvc.Helpers.Abstract;
 using ProgrammersBlog.Shared.Utilities.Extensions;
 using ProgrammersBlog.Shared.Utilities.Results.Abstract;
@@ -12,6 +13,8 @@ namespace ProgrammersBlog.Mvc.Helpers.Concrete
         private readonly IWebHostEnvironment _env;
         private readonly string _wwwroot;
         private readonly string _imgFolder = "img";
+        private const string userImagesFolder = "userImages";
+        private const string postImagesFolder = "postImages";
         public ImageHelper(IWebHostEnvironment env)
         {
             _env = env;
@@ -40,22 +43,31 @@ namespace ProgrammersBlog.Mvc.Helpers.Concrete
             }
         }
 
-        public async Task<IDataResult<ImageUploadedDto>> UploadUserImage(string userName, IFormFile pictureFile, string folderName = "userImages")
+        public async Task<IDataResult<ImageUploadedDto>> Upload(string name, IFormFile pictureFile, PictureType pictureType, string folderName = null)
         {
+            folderName ??= pictureType == PictureType.User ? userImagesFolder : postImagesFolder;
+
             if (!Directory.Exists($"{_wwwroot}/{_imgFolder}/{folderName}"))
             {
                 Directory.CreateDirectory($"{_wwwroot}/{_imgFolder}/{folderName}");
             }
+
             string oldFileName = Path.GetFileNameWithoutExtension(pictureFile.FileName);
             string fileExtension = Path.GetExtension(pictureFile.FileName);
             DateTime dateTime = DateTime.Now;
-            string newFileName = $"{userName}_{dateTime.FullDateAndTimeStringWithUnderscore()}{fileExtension}";
+            string newFileName = $"{name}_{dateTime.FullDateAndTimeStringWithUnderscore()}{fileExtension}";
             var path = Path.Combine($"{_wwwroot}/{_imgFolder}/{folderName}", newFileName);
+
             await using (var stream = new FileStream(path, FileMode.Create))
             {
                 await pictureFile.CopyToAsync(stream);
             }
-            return new DataResult<ImageUploadedDto>(ResultStatus.Success, $"{userName} adli kullanicinin resmi basariyla yuklenmistir.", new ImageUploadedDto
+
+            string message = pictureType == PictureType.User 
+                ? $"{name} adli kullanicinin resmi basariyla yuklenmistir." 
+                : $"{name} adli makalenin resmi basariyla yuklenmistir.";
+
+            return new DataResult<ImageUploadedDto>(ResultStatus.Success, message, new ImageUploadedDto
             {
                 FullName = $"{folderName}/{newFileName}",
                 OldName = oldFileName,
