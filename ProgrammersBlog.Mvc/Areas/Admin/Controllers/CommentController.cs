@@ -15,6 +15,8 @@ using ProgrammersBlog.Mvc.Helpers.Abstract;
 using ProgrammersBlog.Services.Abstract;
 using ProgrammersBlog.Shared.Utilities.Extensions;
 using ProgrammersBlog.Shared.Utilities.Results.ComplexTypes;
+using Microsoft.AspNetCore.Authorization;
+using System.Data;
 
 namespace ProgrammersBlog.Mvc.Areas.Admin.Controllers
 {
@@ -26,12 +28,16 @@ namespace ProgrammersBlog.Mvc.Areas.Admin.Controllers
         {
             _commentService = commentService;
         }
+
+        [Authorize(Roles = "SuperAdmin,Comment.Read")]
         [HttpGet]
         public async Task<IActionResult> Index()
         {
             var result = await _commentService.GetAllByNonDeletedAsync();
             return View(result.Data);
         }
+
+        [Authorize(Roles = "SuperAdmin,Comment.Read")]
         [HttpGet]
         public async Task<IActionResult> GetAllComments()
         {
@@ -43,6 +49,7 @@ namespace ProgrammersBlog.Mvc.Areas.Admin.Controllers
             return Json(commentsResult);
         }
 
+        [Authorize(Roles = "SuperAdmin,Comment.Read")]
         [HttpGet]
         public async Task<IActionResult> GetDetail(int commentId)
         {
@@ -54,6 +61,7 @@ namespace ProgrammersBlog.Mvc.Areas.Admin.Controllers
             return NotFound();
         }
 
+        [Authorize(Roles = "SuperAdmin,Comment.Delete")]
         [HttpPost]
         public async Task<IActionResult> Delete(int commentId)
         {
@@ -61,6 +69,20 @@ namespace ProgrammersBlog.Mvc.Areas.Admin.Controllers
             var commentResult = JsonSerializer.Serialize(result);
             return Json(commentResult);
         }
+
+        [Authorize(Roles = "SuperAdmin,Comment.Update")]
+        [HttpPost]
+        public async Task<IActionResult> Approve(int commentId)
+        {
+            var result = await _commentService.ApproveAsync(commentId, LoggedInUser.UserName);
+            var commentResult = JsonSerializer.Serialize(result, new JsonSerializerOptions
+            {
+                ReferenceHandler = ReferenceHandler.Preserve
+            });
+            return Json(commentResult);
+        }
+
+        [Authorize(Roles = "SuperAdmin,Comment.Update")]
         [HttpGet]
         public async Task<IActionResult> Update(int commentId)
         {
@@ -74,6 +96,8 @@ namespace ProgrammersBlog.Mvc.Areas.Admin.Controllers
                 return NotFound();
             }
         }
+
+        [Authorize(Roles = "SuperAdmin,Comment.Update")]
         [HttpPost]
         public async Task<IActionResult> Update(CommentUpdateDto commentUpdateDto)
         {

@@ -72,6 +72,11 @@ namespace ProgrammersBlog.Services.Utilities
             {
                 return $"{createdByName} tarafından eklenen yorum başarıyla veritabanından silinmiştir.";
             }
+
+            public static string Approve(int commentId)
+            {
+                return $"{commentId} nolu yorum basariyla onaylanmıştır.";
+            }
         }
     }
 }

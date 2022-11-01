@@ -22,7 +22,7 @@ namespace ProgrammersBlog.Data.Concrete.EntityFramework.Mappings
             b.Property(l => l.ProviderKey).HasMaxLength(128);
 
             // Maps to the AspNetUserLogins table
-            b.ToTable("AspNetUserLogins");
+            b.ToTable("UserLogins");
         }
     }
 }

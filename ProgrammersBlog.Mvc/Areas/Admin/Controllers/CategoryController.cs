@@ -16,7 +16,6 @@ using System.Text.Json.Serialization;
 namespace ProgrammersBlog.Mvc.Areas.Admin.Controllers
 {
     [Area("Admin")]
-    [Authorize(Roles = "Admin, Editor")]
     public class CategoryController : BaseController
     {
         private readonly ICategoryService _categoryService;
