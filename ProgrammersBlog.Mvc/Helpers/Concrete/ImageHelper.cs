@@ -5,6 +5,7 @@ using ProgrammersBlog.Shared.Utilities.Extensions;
 using ProgrammersBlog.Shared.Utilities.Results.Abstract;
 using ProgrammersBlog.Shared.Utilities.Results.ComplexTypes;
 using ProgrammersBlog.Shared.Utilities.Results.Concrete;
+using System.Text.RegularExpressions;
 
 namespace ProgrammersBlog.Mvc.Helpers.Concrete
 {
@@ -54,6 +55,10 @@ namespace ProgrammersBlog.Mvc.Helpers.Concrete
 
             string oldFileName = Path.GetFileNameWithoutExtension(pictureFile.FileName);
             string fileExtension = Path.GetExtension(pictureFile.FileName);
+
+            Regex regex = new Regex("[*'\",._&#^@]");
+            name = regex.Replace(name, string.Empty);
+
             DateTime dateTime = DateTime.Now;
             string newFileName = $"{name}_{dateTime.FullDateAndTimeStringWithUnderscore()}{fileExtension}";
             var path = Path.Combine($"{_wwwroot}/{_imgFolder}/{folderName}", newFileName);

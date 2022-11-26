@@ -36,6 +36,10 @@ namespace ProgrammersBlog.Services.Utilities
             {
                 return $"{categoryName} adli kategori veritabanindan basariyla silinmistir.";
             }
+            public static string UndoDelete(string categoryName)
+            {
+                return $"{categoryName} adli kategori arşivden başarıyla geri getirilmiştir.";
+            }
         }
 
         public static class Article
@@ -44,6 +48,11 @@ namespace ProgrammersBlog.Services.Utilities
             {
                 if (isPlural) return "Hic makale bulunamadi";
                 return "Boyle bir makale bulunamadi";
+            }
+
+            public static string UndoDelete(string articleTitle)
+            {
+                return $"{articleTitle} başlıklı makale arşivden başarıyla geri getirilmiştir.";
             }
         }
 
@@ -76,6 +85,11 @@ namespace ProgrammersBlog.Services.Utilities
             public static string Approve(int commentId)
             {
                 return $"{commentId} nolu yorum basariyla onaylanmıştır.";
+            }
+
+            public static string UndoDelete(string createdByName)
+            {
+                return $"{createdByName} tarafından eklenen yorum arşivden başarıyla geri getirilmiştir.";
             }
         }
     }
