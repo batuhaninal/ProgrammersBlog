@@ -18,5 +18,6 @@ namespace ProgrammersBlog.Shared.Entities.Abstract
         public virtual int TotalPages => (int)Math.Ceiling(decimal.Divide(TotalCount, PageSize));
         public virtual bool ShowPrevious => CurrentPage > 1;
         public virtual bool ShowNext => CurrentPage < TotalPages;
+        public virtual bool IsAscending { get; set; } = false;
     }
 }
