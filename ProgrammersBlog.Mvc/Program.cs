@@ -1,4 +1,7 @@
+using NLog.Web;
+using ProgrammersBlog.Entities.Concrete;
 using ProgrammersBlog.Mvc.AutoMapper.Profiles;
+using ProgrammersBlog.Mvc.Filters;
 using ProgrammersBlog.Mvc.Helpers.Abstract;
 using ProgrammersBlog.Mvc.Helpers.Concrete;
 using ProgrammersBlog.Services.AutoMapper.Profiles;
@@ -13,11 +16,16 @@ builder.Services.AddRazorPages();
 builder.Services.AddControllersWithViews(options=>
 {
     options.ModelBindingMessageProvider.SetValueMustNotBeNullAccessor(value => "Bu alan boþ geçilmemelidir.");
+    options.Filters.Add<MvcExceptionFilter>();
 }).AddRazorRuntimeCompilation().AddJsonOptions(opt =>
 {
     opt.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter());
     opt.JsonSerializerOptions.ReferenceHandler = ReferenceHandler.Preserve;
 }).AddNToastNotifyToastr();
+
+//Konfigurasyonlar
+builder.Services.Configure<AboutUsPageInfo>(builder.Configuration.GetSection("AboutUsPageInfo"));
+builder.Services.Configure<WebsiteInfo>(builder.Configuration.GetSection("WebsiteInfo"));
 
 builder.Services.AddSession();
 builder.Services.AddAutoMapper(typeof(CategoryProfile), typeof(ArticleProfile),typeof(UserProfile),typeof(ViewModelsProfile), typeof(CommentProfile));
@@ -39,7 +47,13 @@ builder.Services.ConfigureApplicationCookie(opt =>
     opt.AccessDeniedPath = new PathString("/Admin/Auth/AccessDenied");
 });
 
+builder.WebHost.ConfigureLogging(logging =>
+{
+    logging.ClearProviders();
+}).UseNLog();
+
 var app = builder.Build();
+
 
 // Configure the HTTP request pipeline.
 if (!app.Environment.IsDevelopment())

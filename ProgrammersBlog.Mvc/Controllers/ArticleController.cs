@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using ProgrammersBlog.Entities.ComplexTypes;
 using ProgrammersBlog.Mvc.Models;
 using ProgrammersBlog.Services.Abstract;
 using ProgrammersBlog.Shared.Utilities.Results.ComplexTypes;
@@ -33,8 +34,18 @@ namespace ProgrammersBlog.Mvc.Controllers
             var articleResult = await _articleService.GetAsync(articleId);
             if (articleResult.ResultStatus == ResultStatus.Success)
             {
+                var userArticles = await _articleService.GetAllByUserIdOnFilter(articleResult.Data.Article.UserId, FilterBy.Category, OrderBy.Date, false, 10, articleResult.Data.Article.CategoryId, DateTime.Now, DateTime.Now, 0, 99000, 0, 99000);
                 await _articleService.IncreaseViewCountAsync(articleId);
-                return View(articleResult.Data);
+                return View(new ArticleDetailViewModel
+                {
+                    ArticleDto = articleResult.Data,
+                    ArticleDetailRightSideBar = new ArticleDetailRightSideBarViewModel
+                    {
+                        ArticleListDto = userArticles.Data,
+                        Header = "Kullanıcın Aynı Kategori Üzerindeki En Çok Okunan Makaleleri",
+                        User = articleResult.Data.Article.User
+                    }
+                });
             }
             return NotFound();
         }
