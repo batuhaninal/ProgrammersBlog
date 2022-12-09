@@ -45,7 +45,7 @@ namespace ProgrammersBlog.Services.Extensions
             serviceCollection.AddScoped<ICategoryService, CategoryManager>();
             serviceCollection.AddScoped<IArticleService, ArticleManager>();
             serviceCollection.AddScoped<ICommentService, CommentManager>();
-            serviceCollection.AddSingleton<IMailService, MailManager>();
+            serviceCollection.AddScoped<IMailService, MailManager>();
             return serviceCollection;
         }
     }

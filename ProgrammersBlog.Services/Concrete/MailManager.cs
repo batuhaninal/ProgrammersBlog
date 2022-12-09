@@ -19,7 +19,7 @@ namespace ProgrammersBlog.Services.Concrete
     {
         private readonly SmtpSettings _smtpSettings;
 
-        public MailManager(IOptions<SmtpSettings> smtpSettings)
+        public MailManager(IOptionsSnapshot<SmtpSettings> smtpSettings)
         {
             _smtpSettings = smtpSettings.Value;
         }
@@ -40,7 +40,7 @@ namespace ProgrammersBlog.Services.Concrete
                 Port = _smtpSettings.Port,
                 EnableSsl = true,
                 UseDefaultCredentials = false,
-                Credentials = new NetworkCredential(_smtpSettings.UserName, _smtpSettings.Password),
+                Credentials = new NetworkCredential(_smtpSettings.Username, _smtpSettings.Password),
                 DeliveryMethod = SmtpDeliveryMethod.Network
             };
             smtpClient.Send(message);
@@ -64,7 +64,7 @@ namespace ProgrammersBlog.Services.Concrete
                 Port = _smtpSettings.Port,
                 EnableSsl = true,
                 UseDefaultCredentials = false,
-                Credentials = new NetworkCredential(_smtpSettings.UserName, _smtpSettings.Password),
+                Credentials = new NetworkCredential(_smtpSettings.Username, _smtpSettings.Password),
                 DeliveryMethod = SmtpDeliveryMethod.Network
             };
             smtpClient.Send(message);
