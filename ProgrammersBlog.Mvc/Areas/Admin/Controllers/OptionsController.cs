@@ -1,8 +1,12 @@
-﻿using Microsoft.AspNetCore.Authorization;
+﻿using AutoMapper;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Options;
 using NToastNotify;
 using ProgrammersBlog.Entities.Concrete;
+using ProgrammersBlog.Mvc.Areas.Admin.Models;
+using ProgrammersBlog.Mvc.Models;
+using ProgrammersBlog.Services.Abstract;
 using ProgrammersBlog.Shared.Utilities.Helpers.Abstract;
 
 namespace ProgrammersBlog.Mvc.Areas.Admin.Controllers
@@ -18,8 +22,12 @@ namespace ProgrammersBlog.Mvc.Areas.Admin.Controllers
         private readonly IWritableOptions<WebsiteInfo> _websiteInfoWriter;
         private readonly SmtpSettings _smtpSettings;
         private readonly IWritableOptions<SmtpSettings> _smtpSettingsWriter;
+        private readonly ArticleRightSideBarWidgetOptions _articleRightSideBarWidgetOptions;
+        private readonly IWritableOptions<ArticleRightSideBarWidgetOptions> _articleRightSideBarWidgetOptionsWriter;
+        private readonly ICategoryService _categoryService;
+        private readonly IMapper _mapper;
 
-        public OptionsController(IOptionsSnapshot<AboutUsPageInfo> aboutUsPageInfo, IWritableOptions<AboutUsPageInfo> aboutUsPageInfoWriter, IToastNotification toastNotification, IOptionsSnapshot<WebsiteInfo> websiteInfo, IWritableOptions<WebsiteInfo> websiteInfoWriter, IOptionsSnapshot<SmtpSettings> smtpSettings, IWritableOptions<SmtpSettings> smtpSettingsWriter)
+        public OptionsController(IOptionsSnapshot<AboutUsPageInfo> aboutUsPageInfo, IWritableOptions<AboutUsPageInfo> aboutUsPageInfoWriter, IToastNotification toastNotification, IOptionsSnapshot<WebsiteInfo> websiteInfo, IWritableOptions<WebsiteInfo> websiteInfoWriter, IOptionsSnapshot<SmtpSettings> smtpSettings, IWritableOptions<SmtpSettings> smtpSettingsWriter, IOptionsSnapshot<ArticleRightSideBarWidgetOptions> articleRightSideBarWidgetOptions, IWritableOptions<ArticleRightSideBarWidgetOptions> articleRightSideBarWidgetOptionsWriter, ICategoryService categoryService, IMapper mapper)
         {
             _aboutUsPageInfo = aboutUsPageInfo.Value;
             _aboutUsPageInfoWriter = aboutUsPageInfoWriter;
@@ -28,6 +36,10 @@ namespace ProgrammersBlog.Mvc.Areas.Admin.Controllers
             _websiteInfoWriter = websiteInfoWriter;
             _smtpSettings = smtpSettings.Value;
             _smtpSettingsWriter = smtpSettingsWriter;
+            _articleRightSideBarWidgetOptions = articleRightSideBarWidgetOptions.Value;
+            _articleRightSideBarWidgetOptionsWriter = articleRightSideBarWidgetOptionsWriter;
+            _categoryService = categoryService;
+            _mapper = mapper;
         }
 
         [HttpGet]
@@ -108,6 +120,46 @@ namespace ProgrammersBlog.Mvc.Areas.Admin.Controllers
                     x.Password = model.Password;
                 });
                 _toastNotification.AddSuccessToastMessage("Sitenizin e-posta ayarlari başarıyla güncellenmiştir.", new ToastrOptions
+                {
+                    Title = "Başarılı İşlem"
+                });
+                return View(model);
+            }
+            return View(model);
+        }
+
+        [HttpGet]
+        public async  Task<IActionResult> ArticleRightSideBarWidgetSettings()
+        {
+            var categoriesResult = await _categoryService.GetAllByNonDeletedAsync();
+            var articleRightSideBarWidgetOptionsViewModel = _mapper.Map<ArticleRightSideBarWidgetOptionsViewModel>(_articleRightSideBarWidgetOptions);
+            articleRightSideBarWidgetOptionsViewModel.Categories = categoriesResult.Data.Categories;
+            return View(articleRightSideBarWidgetOptionsViewModel);
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> ArticleRightSideBarWidgetSettings(ArticleRightSideBarWidgetOptionsViewModel model)
+        {
+            var categoriesResult = await _categoryService.GetAllByNonDeletedAsync();
+            model.Categories= categoriesResult.Data.Categories;
+            if (ModelState.IsValid)
+            {
+                _articleRightSideBarWidgetOptionsWriter.Update(x =>
+                {
+                    x.Header = model.Header;
+                    x.TakeSize = model.TakeSize;
+                    x.CategoryId = model.CategoryId;
+                    x.FilterBy = model.FilterBy;
+                    x.OrderBy = model.OrderBy;
+                    x.IsAscending = model.IsAscending;
+                    x.StartAt = model.StartAt;
+                    x.EndAt = model.EndAt;
+                    x.MaxViewCount = model.MaxViewCount;
+                    x.MinViewCount = model.MinViewCount;
+                    x.MaxCommentCount = model.MaxCommentCount;
+                    x.MinCommentCount = model.MinCommentCount;
+                });
+                _toastNotification.AddSuccessToastMessage("Makale sayfalarınızın widget ayarları başarıyla güncellenmiştir.", new ToastrOptions
                 {
                     Title = "Başarılı İşlem"
                 });
