@@ -26,6 +26,7 @@ builder.Services.AddControllersWithViews(options=>
 //Konfigurasyonlar
 builder.Services.Configure<AboutUsPageInfo>(builder.Configuration.GetSection("AboutUsPageInfo"));
 builder.Services.Configure<WebsiteInfo>(builder.Configuration.GetSection("WebsiteInfo"));
+builder.Services.Configure<SmtpSettings>(builder.Configuration.GetSection("SmtpSettings"));
 
 builder.Services.AddSession();
 builder.Services.AddAutoMapper(typeof(CategoryProfile), typeof(ArticleProfile),typeof(UserProfile),typeof(ViewModelsProfile), typeof(CommentProfile));
