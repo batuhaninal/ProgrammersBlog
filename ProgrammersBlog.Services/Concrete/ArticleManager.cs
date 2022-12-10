@@ -7,6 +7,7 @@ using ProgrammersBlog.Entities.Concrete;
 using ProgrammersBlog.Entities.Dtos;
 using ProgrammersBlog.Services.Abstract;
 using ProgrammersBlog.Services.Utilities;
+using ProgrammersBlog.Shared.Entities.Concrete;
 using ProgrammersBlog.Shared.Utilities.Results.Abstract;
 using ProgrammersBlog.Shared.Utilities.Results.ComplexTypes;
 using ProgrammersBlog.Shared.Utilities.Results.Concrete;
@@ -135,7 +136,6 @@ namespace ProgrammersBlog.Services.Concrete
         public async Task<IDataResult<ArticleListDto>> GetAllByNonDeletedAsync()
         {
             var articles = await UnitOfWork.Articles.GetAllAsync(x => !x.IsDeleted, x => x.User, x => x.Category);
-            throw new SqlNullValueException();
             if (articles.Count > -1)
             {
                 return new DataResult<ArticleListDto>(ResultStatus.Success, new ArticleListDto()
@@ -437,6 +437,106 @@ namespace ProgrammersBlog.Services.Concrete
             return new DataResult<ArticleListDto>(ResultStatus.Success, new ArticleListDto
             {
                 Articles = sortedArticles
+            });
+        }
+
+        public async Task<IDataResult<ArticleDto>> GetByIdAsync(int articleId, bool includeCategory, bool includeComments, bool includeUser)
+        {
+            List<Expression<Func<Article, bool>>> predicates = new();
+            List<Expression<Func<Article, object>>> includes = new();
+            if (includeCategory) includes.Add(a => a.Category);
+            if (includeComments) includes.Add(a => a.Comments);
+            if (includeUser) includes.Add(a => a.User);
+            predicates.Add(a => a.Id == articleId);
+            var article = await UnitOfWork.Articles.GetAsync(predicates, includes);
+            if (article == null)
+            {
+                return new DataResult<ArticleDto>(ResultStatus.Warning, Messages.General.ValidationError(), null, new List<ValidationError>
+                {
+                    new ValidationError
+                    {
+                        PropertyName = "articleId",
+                        Message = Messages.Article.NotFound(articleId)
+                    }
+                });
+            }
+            return new DataResult<ArticleDto>(ResultStatus.Success, new ArticleDto
+            {
+                Article = article
+            });
+        }
+
+        public async Task<IDataResult<ArticleListDto>> GetAllAsync(int? categoryId, int? userId, bool? isActive, bool? isDeleted, int currentPage, int pageSize, OrderByGeneral orderBy, bool isAscending, bool includeCategory, bool includeComments, bool includeUser)
+        {
+            List<Expression<Func<Article, bool>>> predicates = new();
+            List<Expression<Func<Article, object>>> includes = new();
+            if (categoryId.HasValue)
+            {
+                if (!await UnitOfWork.Categories.AnyAsync(c=>c.Id == categoryId.Value))
+                {
+                    return new DataResult<ArticleListDto>(ResultStatus.Warning, Messages.General.ValidationError(), null, new List<ValidationError>
+                {
+                    new ValidationError
+                    {
+                        PropertyName = "categoryId",
+                        Message = Messages.Category.NotFound(categoryId.Value)
+                    }
+                });
+                }
+                predicates.Add(a=>a.CategoryId == categoryId.Value);
+            }
+
+            if (userId.HasValue)
+            {
+                if (!await _userManager.Users.AnyAsync(u=>u.Id == userId.Value))
+                {
+                    return new DataResult<ArticleListDto>(ResultStatus.Warning, Messages.General.ValidationError(), null, new List<ValidationError>
+                {
+                    new ValidationError
+                    {
+                        PropertyName = "userId",
+                        Message = Messages.Users.NotFound(userId.Value)
+                    }
+                });
+                }
+                predicates.Add(a => a.UserId == userId.Value);
+            }
+
+            if(isActive.HasValue) predicates.Add(a=>a.IsActive == isActive.Value);
+            if(isDeleted.HasValue) predicates.Add(a=>a.IsDeleted == isDeleted.Value);
+
+
+            if (includeCategory) includes.Add(a => a.Category);
+            if (includeComments) includes.Add(a => a.Comments);
+            if (includeUser) includes.Add(a => a.User);
+            var articles = await UnitOfWork.Articles.GetAllAsync(predicates, includes);
+            IOrderedEnumerable<Article> sortedArticles;
+
+            switch (orderBy)
+            {
+                case OrderByGeneral.Id:
+                    sortedArticles = isAscending ? articles.OrderBy(a => a.Id) : articles.OrderByDescending(a => a.Id);
+                    break;
+                case OrderByGeneral.Az:
+                    sortedArticles = isAscending ? articles.OrderBy(a => a.Title) : articles.OrderByDescending(a => a.Title);
+                    break;
+                case OrderByGeneral.CreatedDate:
+                    sortedArticles = isAscending ? articles.OrderBy(a => a.CreatedDate) : articles.OrderByDescending(a => a.CreatedDate);
+                    break;
+                default:
+                    sortedArticles = articles.OrderBy(x=>x.Id);
+                    break;
+            }
+
+            return new DataResult<ArticleListDto>(ResultStatus.Success, new ArticleListDto
+            {
+                Articles = sortedArticles.Skip((currentPage - 1) * pageSize).Take(pageSize).ToList(),
+                CategoryId = categoryId.HasValue ? categoryId.Value : null,
+                CurrentPage = currentPage,
+                PageSize = pageSize,
+                IsAscending = isAscending,
+                TotalCount = articles.Count,
+                ResultStatus = ResultStatus.Success
             });
         }
     }

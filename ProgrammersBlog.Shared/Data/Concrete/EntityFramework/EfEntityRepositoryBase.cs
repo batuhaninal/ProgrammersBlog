@@ -19,6 +19,8 @@ namespace ProgrammersBlog.Shared.Data.Concrete.EntityFramework
         public EfEntityRepositoryBase(DbContext context)
         {
             _context = context;
+            //Include referanslarin hepsini getirmek yerine istenilen degerleri getirmesi saglaniyor.
+            //_context.ChangeTracker.QueryTrackingBehavior = QueryTrackingBehavior.NoTracking;
         }
 
         public async Task<Tentity> AddAsync(Tentity entity)
@@ -57,7 +59,27 @@ namespace ProgrammersBlog.Shared.Data.Concrete.EntityFramework
                     query = query.Include(item);
                 }
             }
-            return await query.ToListAsync();
+            return await query.AsNoTracking().ToListAsync();
+        }
+
+        public async Task<IList<Tentity>> GetAllAsync(IList<Expression<Func<Tentity, bool>>> predicates, IList<Expression<Func<Tentity, object>>> includeProperties)
+        {
+            IQueryable<Tentity> query = _context.Set<Tentity>();
+            if (predicates != null && predicates.Any())
+            {
+                foreach (var predicate in predicates)
+                {
+                    query = query.Where(predicate);
+                }
+            }
+            if (includeProperties != null && includeProperties.Any())
+            {
+                foreach (var item in includeProperties)
+                {
+                    query = query.Include(item);
+                }
+            }
+            return await query.AsNoTracking().ToListAsync();
         }
 
         public async Task<Tentity> GetAsync(Expression<Func<Tentity, bool>> predicate, params Expression<Func<Tentity, object>>[] includeProperties)
@@ -71,7 +93,27 @@ namespace ProgrammersBlog.Shared.Data.Concrete.EntityFramework
                     query = query.Include(item);
                 }
             }
-            return await query.SingleOrDefaultAsync();
+            return await query.AsNoTracking().SingleOrDefaultAsync();
+        }
+
+        public async Task<Tentity> GetAsync(IList<Expression<Func<Tentity, bool>>> predicates, IList<Expression<Func<Tentity, object>>> includeProperties)
+        {
+            IQueryable<Tentity> query = _context.Set<Tentity>();
+            if(predicates != null && predicates.Any())
+            {
+                foreach (var predicate in predicates)
+                {
+                    query = query.Where(predicate);
+                }
+            }
+            if (includeProperties != null &&includeProperties.Any())
+            {
+                foreach (var item in includeProperties)
+                {
+                    query = query.Include(item);
+                }
+            }
+            return await query.AsNoTracking().SingleOrDefaultAsync();
         }
 
         public async Task<IList<Tentity>> SearchAsync(IList<Expression<Func<Tentity, bool>>> predicates, params Expression<Func<Tentity, object>>[] includeProperties)
@@ -97,7 +139,7 @@ namespace ProgrammersBlog.Shared.Data.Concrete.EntityFramework
                 }
             }
 
-            return await query.ToListAsync();
+            return await query.AsNoTracking().ToListAsync();
         }
 
         public async Task<Tentity> UpdateAsync(Tentity entity)
