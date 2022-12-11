@@ -1,3 +1,5 @@
+using Microsoft.Extensions.FileSystemGlobbing.Internal.Patterns;
+using NLog;
 using NLog.Web;
 using ProgrammersBlog.Entities.Concrete;
 using ProgrammersBlog.Mvc.AutoMapper.Profiles;
@@ -54,14 +56,7 @@ builder.Services.ConfigureApplicationCookie(opt =>
     opt.AccessDeniedPath = new PathString("/Admin/Auth/AccessDenied");
 });
 
-
-builder.WebHost.ConfigureLogging(logging =>
-{
-    logging.ClearProviders();
-}).UseNLog();
-
 var app = builder.Build();
-
 
 // Configure the HTTP request pipeline.
 if (!app.Environment.IsDevelopment())
@@ -94,6 +89,11 @@ app.UseEndpoints(endpoints =>
         areaName: "Admin",
         pattern: "Admin/{controller=Home}/{action=Index}/{id?}"
         );
+    endpoints.MapControllerRoute(
+        name: "article",
+        pattern: "{title}/{articleId}",
+        defaults: new { controller = "Article", action = "Detail" }
+        );
     endpoints.MapDefaultControllerRoute();
 });
 
@@ -112,4 +112,7 @@ builder.Host.ConfigureAppConfiguration((hostingContext, config) =>
     {
         config.AddCommandLine(args);
     }
-});
+}).ConfigureLogging(logging =>
+{
+    logging.ClearProviders();
+}).UseNLog();

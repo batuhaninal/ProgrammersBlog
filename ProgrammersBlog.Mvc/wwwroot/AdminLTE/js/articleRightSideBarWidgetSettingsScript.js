@@ -49,6 +49,9 @@
             //minDate: -3,
             maxDate: 0,
             showAnim: "slide",
+            onSelect: function (selectedDate) {
+                $("#endAtDatePicker").datepicker('option', 'minDate', selectedDate || getTodaysDate());
+            }
             //showAnim: "drop",
             //showOptions: { direction: "down" },
         });
