@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Mvc;
 using ProgrammersBlog.Entities.Concrete;
 using ProgrammersBlog.Mvc.Areas.Admin.Models;
+using ProgrammersBlog.Services.Abstract;
 
 namespace ProgrammersBlog.Mvc.Areas.Admin.ViewComponents
 {
